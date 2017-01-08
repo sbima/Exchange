@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<style>
+
+.arc text {
+  font: 10px sans-serif;
+  text-anchor: middle;
+}
+
+.arc path {
+  stroke: #fff;
+}
+
+</style>
+<body>
+<script src="//d3js.org/d3.v3.min.js"></script>
+<script>
+
+var width = 500,
+    height = 360,
+    radius = Math.min(width, height) / 2;
+
+var color = d3.scale.ordinal()
+    .range(["#98abc5","#0000FF", "#00FFFF", "#4B0082", "#6b486b", "#a05d56", "#d0743c", "#ff8c00","#00008B","#ADFF2F","#48D1CC","#00FA9A",]);
+
+var arc = d3.svg.arc()
+    .outerRadius(radius - 10)
+    .innerRadius(radius - 70);
+
+var pie = d3.layout.pie()
+    .sort(null)
+    .value(function(d) { return d.tagcount; });
+
+var svg = d3.select("body").append("svg")
+    .attr("width", width)
+    .attr("height", height)
+  .append("g")
+    .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
+
+d3.csv("tag.csv", type, function(error, data) {
+  if (error) throw error;
+
+  var g = svg.selectAll(".arc")
+      .data(pie(data))
+    .enter().append("g")
+      .attr("class", "arc");
+
+  g.append("path")
+      .attr("d", arc)
+      .style("fill", function(d) { return color(d.data.tagname); });
+
+  g.append("text")
+      .attr("transform", function(d) { return "translate(" + arc.centroid(d) + ")"; })
+      .attr("dy", ".35em")
+      .text(function(d) { return d.data.tagcount; });
+    
+    
+  /*  var legend = svg.selectAll(".legend")
+							.data(color.domain())
+							.enter().append("g")
+								.attr("class", "legend")
+								.attr("transform", function(d, i) { return "translate(10," + (i+7) * 20 + ")"; });
+			// Draw legend colored rectangles
+			legend.append("rect")
+					.attr("x", width - 18)
+					.attr("width", 18)
+					.attr("height", 18)
+					.style("fill", color);
+			// Draw legend text
+			legend.append("text")
+					.attr("x", width - 24)
+					.attr("y", 9)
+					.attr("dy", ".35em")
+					.style("text-anchor", "end")
+					.text(function(d) { return d.data.tagname;});
+		*/
+    
+var legend = svg.selectAll(".legend")
+      .data(pie(data))
+      .enter().append("g")
+      .attr("transform", function(d,i){
+        return "translate(" + (width - 110) + "," + (i * 15 + 20) + ")";
+      })
+      .attr("class", "legend");   
+    
+    legend.append("rect")
+      .attr("width", 10)
+      .attr("height", 10)
+      .attr("fill", function(d, i) {
+        return colour(i);
+      });
+    
+    legend.append("text")
+      .text(function(d){
+        return d.value + "  " + d.data.tagname;
+      })
+      .style("font-size", 12)
+      .attr("y", 10)
+      .attr("x", 11);
+ });
+function type(d) {
+  d.tagcount = +d.tagcount;
+  return d;
+}
+
+</script>

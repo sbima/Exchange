@@ -1,0 +1,145 @@
+
+<!DOCTYPE html>
+<html>
+<meta charset="utf-8">
+<style>
+
+.bar {
+  fill: steelblue;
+}
+
+.axis {
+  font: 15px sans-serif;
+}
+
+.axis path,
+.axis line {
+  fill: none;
+  stroke: #000;
+  shape-rendering: crispEdges;
+}
+
+.x3.axis path {
+  display: none;
+}
+
+</style>
+<body>
+<script src="//d3js.org/d3.v3.min.js"></script>
+<script>
+var axisMargin=20;
+var margin3 = {top: 30, right: 20, bottom: 30, left: 170},
+    //barHeight = (height-axisMargin-margin3*2)* 0.4/data.length,
+    width = 500 - margin3.left - margin3.right,
+    height = 360 - margin3.top - margin3.bottom;
+    
+var	parseDate = d3.time.format("%Y-%M").parse;
+var x3 = d3.scale.linear().range([0,width]);
+    
+
+var y3 = d3.scale.ordinal().rangeRoundBands([0, width],0.3);
+
+
+var xAxis1 = d3.svg.axis()
+    .scale(y3)
+    .orient("left")
+     .ticks(10);
+
+  
+var yAxis1 = d3.svg.axis()
+    .scale(x3)
+    .orient("bottom");
+
+    
+var svg3 = d3.select("body").append("svg")
+    .attr("width", width + margin3.left + margin3.right)
+    .attr("height", height + margin3.top + margin3.bottom)
+    .append("g")
+    .attr("transform", "translate(" + margin3.left + "," + margin3.top + ")");
+
+d3.csv("date.csv", type, function(error, data) {
+  if (error) throw error;
+
+  x3.domain([0, d3.max(data, function(d) { return d.count; })]);
+  y3.domain(data.map(function(d) { return d.date; }));
+  
+
+  svg3.append("g")
+      .attr("class", "y axis")
+      .attr("transform", "translate(0," + height + ")")
+      .call(yAxis1)
+      .append("text")
+      .attr("x", 100)
+  .attr("y", 30)
+      .style("text-anchor", "middle")
+      .text("Count");
+
+      svg3.append("g")
+      .attr("class", "y axis")
+      .call(xAxis1)
+      
+
+ var rect= svg3.selectAll(".bar")
+      .data(data)
+      .enter()
+      .append("rect")
+      .attr("class", "bar")
+       .attr("stroke","blue")
+        .attr("stroke-width", 2)
+      .attr("y", function(d) { return y3(d.date); })
+      .attr("height", y3.rangeBand())
+      .attr("width", function(d) { return  x3(d.count);
+    
+                                 })
+ 
+ /*var text = svg3.selectAll("text")
+						   .data(data)
+						   .enter()
+						   .append("text")
+						   .text(function(d) { return y3(d.count)})
+						   .attr("x", 20)
+					         .attr("y", 20)
+						   .attr("font-size", "15px")
+						   .attr("fill", "black");*/
+/*rect.append("text")
+            .attr("class", "label")
+             attr("font-size", "15px")
+             .attr("fill", "black")
+             .style({'fill':'#fff','font-size':'14px'})
+            .attr({'x':function(d) {return xAxis1(d)-200; },'y':function(d,i){ return yAxis1(i)+35; }})
+            .text(function(d){
+                return d.count;
+            })*/
+    
+.on("mouseover", function(d) {
+				svg3.append("text")
+				.attr("id","tooltip")
+                             .attr("x",10)
+					         //.attr("y", 10)
+                   .attr("font-family", "sans-serif")
+									 .attr("font-size", "15px")
+									 .attr("font-weight", "bold")
+									 .attr("fill", "black")
+                   .text(d.count);
+									   })
+							.on("mouseout", function() {d3.select("#tooltip").remove()});
+
+
+  
+ rect.transition()
+				.attr("width", function(d) { return width - x3(d.count); })
+				.attr("y", function(d) { return y3(d.date); })
+				.delay(function(d, i) { return i * 10; })
+				.duration(1000)
+				.ease("elastic");
+//});
+});
+function type(d) {
+  d.count = +d.questions;
+  return d;
+}
+
+</script>
+</body>
+    </html>
+

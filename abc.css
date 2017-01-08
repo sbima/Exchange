@@ -1,0 +1,21 @@
+.navbar .brand {
+max-height: 40px;
+overflow: visible;
+padding-top: 0;
+padding-bottom: 0;
+}
+.navbar a.navbar-brand {padding: 9px 15px 8px; }
+.img{
+    
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    
+}
+.navbar-fixed-top {
+  background-color: #1a82bb;
+  border-color: #8490ea;
+}
+.navbar a {
+    color: white;
+}
